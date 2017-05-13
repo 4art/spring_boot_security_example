@@ -2,6 +2,8 @@ package com.example.controller;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +21,8 @@ public class LoginController {
 	
 	@Autowired
 	private UserService userService;
+
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@RequestMapping(value={"/", "/login"}, method = RequestMethod.GET)
 	public ModelAndView login(){
@@ -69,5 +73,13 @@ public class LoginController {
 		return modelAndView;
 	}
 	
-
+	@RequestMapping(value = "/home", method = RequestMethod.GET)
+	public ModelAndView userHome(){
+		ModelAndView modelAndView = new ModelAndView();
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		User user = userService.findUserByEmail(auth.getName());
+		modelAndView.addObject("username", "Welcome "+user.getName() + " " +user.getLastName() + ".");
+		modelAndView.setViewName("home");
+		return modelAndView;
+	}
 }
